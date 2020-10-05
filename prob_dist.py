@@ -27,8 +27,7 @@ def read_file(ifile: object, ofile: object, bin_size: float) -> object:
                 except StopIteration:
                     distances = np.array(d, dtype=float)
                     result, bin_edges = pofr(distances, bin_size)
-                    # with open(ofile, "w") as g:
-                    #     g.write(str(result))
+                    # need to sort out how to write to file.
     return
 
 
