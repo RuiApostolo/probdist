@@ -25,7 +25,13 @@ def read_file(ifile: object, ofile: object, bin_size: float) -> object:
                     next(f)
                     next(f)
                 except StopIteration:
+                    with open("raw_"+ofile, 'w') as o:
+                        for item in d:
+                            o.write("%s\n" % item)
                     distances = np.array(d, dtype=float)
+                    # with open(ofile, 'w') as o:
+                    #     for item in d:
+                    #         o.write("%s\n" % item)
                     result, bin_edges = pofr(distances, bin_size)
                     # need to sort out how to write to file.
     return
@@ -50,6 +56,10 @@ def pofr(d, bin_size):
     # print(bin_edges)
     hist, bin_edges = np.histogram(d, bins=int((d.max()-d.min())/bin_size), density=True)
     z = plt.hist(d, density=True, bins=int((d.max()-d.min())/bin_size))  # arguments are passed to np.histogram
+    plt.title("N-N p(r)")
+    plt.xlabel("r")
+    plt.ylabel("p(r)")
+    plt.savefig("pr.png")
     plt.show()
     return hist, bin_edges
 
