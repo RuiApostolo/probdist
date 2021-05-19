@@ -1,6 +1,8 @@
+#!/usr/bin/python3
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 def read_file(ifile: object, ofile: object, bin_size: float) -> object:
     size = (2, 3)
@@ -37,10 +39,10 @@ def read_file(ifile: object, ofile: object, bin_size: float) -> object:
     return
 
 
-
 def distance(c):
     r = np.sqrt((c[0, 0]-c[1, 0])**2+(c[0, 1]-c[1, 1])**2+(c[0, 2]-c[1, 2])**2)
     return(r)
+
 
 def pofr(d, bin_size):
     # bin_array = np.array([], dtype=float)
@@ -54,8 +56,10 @@ def pofr(d, bin_size):
 
     # print(hist)
     # print(bin_edges)
-    hist, bin_edges = np.histogram(d, bins=int((d.max()-d.min())/bin_size), density=True)
-    z = plt.hist(d, density=True, bins=int((d.max()-d.min())/bin_size))  # arguments are passed to np.histogram
+    hist, bin_edges = np.histogram(d, bins=int(
+        (d.max()-d.min())/bin_size), density=True)
+    # arguments are passed to np.histogram
+    z = plt.hist(d, density=True, bins=int((d.max()-d.min())/bin_size))
     plt.title("N-N p(r)")
     plt.xlabel("r")
     plt.ylabel("p(r)")
@@ -63,11 +67,25 @@ def pofr(d, bin_size):
     plt.show()
     return hist, bin_edges
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Generate the p(r) for xyz file with only 2 atoms')
-    parser.add_argument('--input', '-i', help='Path to the input xyz file', required=True)
-    parser.add_argument('--output', '-o', help='Path to the output p(r) file', default='pr.dat')
-    parser.add_argument('--bin_size', '-b', help='Bin size. Default = 0.1', default='0.1')
+    parser = argparse.ArgumentParser(
+        description='Generate the p(r) for xyz file with only 2 atoms')
+    parser.add_argument(
+        '--input',
+        '-i',
+        help='Path to the input xyz file',
+        required=True)
+    parser.add_argument(
+        '--output',
+        '-o',
+        help='Path to the output p(r) file',
+        default='pr.dat')
+    parser.add_argument(
+        '--bin_size',
+        '-b',
+        help='Bin size. Default = 0.1',
+        default='0.1')
 
     args = parser.parse_args()
 
