@@ -63,8 +63,8 @@ def pofr(d, bin_size):
     plt.title("N-N p(r)")
     plt.xlabel("r")
     plt.ylabel("p(r)")
-    plt.savefig("pr.png")
-    plt.show()
+    plt.savefig("{0}.png".format(args.output.replace(".dat","")))
+    #  plt.show()
     return hist, bin_edges
 
 
