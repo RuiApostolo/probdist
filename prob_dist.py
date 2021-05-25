@@ -2,6 +2,8 @@
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+from math import floor, ceil
+from decimal import Decimal
 
 
 def read_file(ifile: object, ofile: object, bin_size: float) -> object:
@@ -27,15 +29,28 @@ def read_file(ifile: object, ofile: object, bin_size: float) -> object:
                     next(f)
                     next(f)
                 except StopIteration:
-                    with open("raw_"+ofile, 'w') as o:
+                    filename = ''.join(
+                        ofile.replace(
+                            '../',
+                            '').split('.')[
+                            :-1])
+                    extension = ''.join(ofile.split('.')[-1])
+                    with open(filename + '_raw.' + extension, 'w') as o:
                         for item in d:
                             o.write("%s\n" % item)
                     distances = np.array(d, dtype=float)
-                    # with open(ofile, 'w') as o:
-                    #     for item in d:
-                    #         o.write("%s\n" % item)
                     result, bin_edges = pofr(distances, bin_size)
                     # need to sort out how to write to file.
+                    with open(filename + '.' + extension, 'w') as o:
+                        txt = "{bin_c:8.6f} \t {val:8.6f} \n"
+                        o.write(
+                            "# bin_center \t value \t bin_size = {} \n".format(
+                                bin_size))
+                        for value, edge in zip(result, bin_edges[:-1]):
+                            o.write(
+                                txt.format(
+                                    val=value,
+                                    bin_c=(edge + float(bin_size) / 2.0)))
     return
 
 
@@ -44,33 +59,50 @@ def distance(c):
     return(r)
 
 
-def pofr(d, bin_size):
-    # bin_array = np.array([], dtype=float)
-    # b = []
-    # for i in d:
-    #     bin = round(i/bin_size) + 1
-    #     b.append(bin)
-    # bin_array = np.array(b, dtype=float)
-    # hist, bin_edges = np.histogram(bin_array)
-    # return hist, bin_edges
+def round_down(div, *args):
+    result = []
+    for i in args:
+        # Decimal reduces error chance from binary fractions
+        # round precision of 5 should be enough for all reasonable bins
+        # consider using something like:
+        # https://stackoverflow.com/questions/6189956/easy-way-of-finding-decimal-places
+        result.append(round(div * floor(float(Decimal(str(i)))/div), 5))
+    return result
 
-    # print(hist)
-    # print(bin_edges)
-    hist, bin_edges = np.histogram(d, bins=int(
-        (d.max()-d.min())/bin_size), density=True)
+
+def pofr(d, bin_size):
+    # find lowest datapoint
+    d_min = d.min()
+    # round_down to bin multiple
+    d_min = round_down(bin_size, d_min)[0]
+    # create bins
+    n_bins = int(ceil((d.max()-d_min)/bin_size))
+    # get d.max()
+    d_max = (d_min + n_bins * bin_size)
+    # create histogram
+    hist, bin_edges = np.histogram(d,
+                                   bins=n_bins,
+                                   range=(d_min, d_max),
+                                   density=True)
     # arguments are passed to np.histogram
-    z = plt.hist(d, density=True, bins=int((d.max()-d.min())/bin_size))
+    plt.hist(d, density=True, bins=n_bins, range=(d_min, d_max))
     plt.title("N-N p(r)")
     plt.xlabel("r")
     plt.ylabel("p(r)")
-    plt.savefig("{0}.png".format(args.output.replace(".dat","")))
-    #  plt.show()
+    plt.savefig(
+        "{0}.png".format(
+            args.output.replace(
+                "../",
+                "").replace(
+                ".dat",
+                "")))
+    #  fig.show()
     return hist, bin_edges
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Generate the p(r) for xyz file with only 2 atoms')
+        description='Generate the p(r) for an xyz file with only 2 atoms')
     parser.add_argument(
         '--input',
         '-i',
