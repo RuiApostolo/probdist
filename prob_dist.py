@@ -40,7 +40,6 @@ def read_file(ifile: object, ofile: object, bin_size: float) -> object:
                             o.write("%s\n" % item)
                     distances = np.array(d, dtype=float)
                     result, bin_edges = pofr(distances, bin_size)
-                    # need to sort out how to write to file.
                     with open(filename + '.' + extension, 'w') as o:
                         txt = "{bin_c:8.6f} \t {val:8.6f} \n"
                         o.write(
