@@ -2,6 +2,7 @@
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
+
 from math import floor, ceil
 from decimal import Decimal
 
